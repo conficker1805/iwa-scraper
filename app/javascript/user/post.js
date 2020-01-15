@@ -1,0 +1,4 @@
+window.IwaScraper.posts = {
+  initIndex(){
+  }
+}
