@@ -6,8 +6,9 @@
   @include -border-radius(3px);
 
   .cover {
-
     img {
+      height: 232px;
+      object-fit: cover;
       width: 100%;
       @include -border-radius(3px);
     }

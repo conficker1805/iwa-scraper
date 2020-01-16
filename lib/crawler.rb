@@ -1,25 +1,37 @@
 class Crawler
   class << self
+    ORIGIN_SITE = "https://news.ycombinator.com/"
+
     def parse(html)
       @data = Nokogiri::HTML.parse(html)
 
-      posts.each do |post|
-        if false # cache.present?
-          load_cache
+      result = posts.map do |post|
+        if post.cached?
+          path = Rails.root.join('tmp', "#{post.id}.yml")
+          YAML.load_file(path)
+        else
+          post
         end
+
       end
 
-      # FetchPostJob.perform_later posts.select { |p| p.content.nil? }
-      posts
+      FetchPostJob.perform_later post_attrs.select { |p| p[:content].nil? }
+
+      result
     rescue StandardError => e
+      Rails.logger.info("DEBUG:------------------ #{ e.inspect } ------------------")
       # TODO: rescue parse error & send mail to admin
     end
 
     private
 
     def posts
-      posts_wrap.map do |post|
-        Post.new({
+      @_posts ||= post_attrs.map{ |p| Post.new(p) }
+    end
+
+    def post_attrs
+      @_post_attrs ||= posts_wrap.map do |post|
+        {
           id: Digest::MD5.hexdigest(url(post)),
           url: url(post),
           title: title(post),
@@ -28,7 +40,7 @@ class Crawler
           author: author(post),
           comment_count: comment_count(post),
           posted_at: posted_at(post)
-        })
+        }
       end
     end
 
@@ -37,7 +49,9 @@ class Crawler
     end
 
     def url(post)
-      post.css('.storylink').attr('href').to_s
+      url = post.css('.storylink').attr('href').to_s
+      url = ORIGIN_SITE + url if (url =~ URI.regexp).nil?
+      url
     end
 
     def title(post)

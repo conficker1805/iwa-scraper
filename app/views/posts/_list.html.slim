@@ -7,7 +7,7 @@
             .cover
               = link_to root_path
                 - if post.cover
-                  = image_tag('http://placehold.it/500x500', alt: post.title)
+                  = image_tag(post.cover, alt: post.title)
                 - else
                   .no-image
                     .loader
@@ -22,7 +22,5 @@
                 .site
                   | From 
                   = link_to post.site, post.site
-                .comment-count
-                  = post.comment_count
     - else
       p.no-post No post found
