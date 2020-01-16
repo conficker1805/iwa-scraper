@@ -5,6 +5,4 @@ class PostsController < ApplicationController
 
     @posts = Crawler.parse(html)
   end
-
-
 end

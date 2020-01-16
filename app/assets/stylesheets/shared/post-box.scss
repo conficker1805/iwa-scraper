@@ -6,16 +6,26 @@
   @include -border-radius(3px);
 
   .cover {
+
     img {
       width: 100%;
       @include -border-radius(3px);
     }
 
+    .no-image {
+      min-height: 232px;
+      background-color: #CCC;
+      @include -display-flex();
+      @include -justify-content(center);
+      @include -align-items(center);
+    }
+
     .ranking {
+      color: #DCDCDC;
       position: absolute;
       top: 35px;
       left: 8px;
-      background: #94a9e2;
+      background-color: #4795c5;
       padding: 2px 17px;
       border-top-right-radius: 8px;
       border-bottom-right-radius: 8px;

@@ -5,7 +5,7 @@ class Crawler
 
       posts.each do |post|
         if false # cache.present?
-           load_cache
+          load_cache
         end
       end
 
@@ -63,13 +63,6 @@ class Crawler
     def posted_at(post)
       post_info(post).css('.age a').text
     end
-
-    # Post author
-    # x.css('.athing').first.next_element.css('.subtext .hnuser').text
-
-    # Posted at
-    # x.css('.athing').first.next_element.css('.subtext a').last.text
-
 
     def post_info(post)
       post.next_element.css('.subtext')

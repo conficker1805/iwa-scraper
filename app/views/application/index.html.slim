@@ -1,27 +1,3 @@
 .post-wrap
-  .page-loader
-  .container
-    .row
-      - if @posts.present?
-        - @posts.each do |post|
-          .col-md-3
-            .post-box
-              .cover
-                = link_to root_path
-                  = image_tag('http://placehold.it/500x500', alt: post.title)
-                  .ranking
-                    = post.point
-              .title
-                = link_to post.title, root_path
-              .info
-                .author
-                  = "#{post.author} posted #{post.posted_at}"
-                .line
-                  .site
-                    | From 
-                    = link_to post.site, post.site
-                  .comment-count
-                    = post.comment_count
-      - else
-        p No post found
+  .loader
 
