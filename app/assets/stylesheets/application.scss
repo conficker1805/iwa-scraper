@@ -1,0 +1,13 @@
+// Libraries
+@import 'variables';
+@import 'bootstrap/scss/bootstrap';
+@import 'reset';
+
+// Customize
+@import 'mixins';
+@import 'shared/*';
+
+// Components
+@import 'layouts/*';
+@import 'components/home';
+

@@ -1,0 +1,57 @@
+.post-box {
+  background-color: #FFF;
+  margin-bottom: 30px;
+  padding: 8px;
+  position: relative;
+  @include -border-radius(3px);
+
+  .cover {
+    img {
+      width: 100%;
+      @include -border-radius(3px);
+    }
+
+    .ranking {
+      position: absolute;
+      top: 35px;
+      left: 8px;
+      background: #94a9e2;
+      padding: 2px 17px;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      min-width: 112px;
+    }
+  }
+
+  .title {
+    @include -text-elipsis(2)
+  }
+
+  .info {
+    @include -display-flex();
+    flex-wrap: wrap;
+    font-size: 12px;
+
+    .line {
+      @include -display-flex();
+      @include -flex(1);
+      @include -justify-content(flex-end);
+    }
+
+    .author {
+      width: 100%;
+      text-align: right;
+    }
+
+    .site:after {
+      content: "";
+      width: 1px;
+      height: 12px;
+      position: relative;
+      display: inline-block;
+      background-color: black;
+      top: 2px;
+      margin: 0 3px;
+    }
+  }
+}

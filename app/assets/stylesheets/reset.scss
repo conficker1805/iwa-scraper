@@ -1,0 +1,27 @@
+html, body, div, span, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, code, img, strong, sub, sup, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  border: none;
+  font-family: $main-font;
+  font-weight: $main-font-regular;
+}
+
+p, a, div, th, td {
+  color: $default-text-color;
+}
+
+ol, ul, li {
+  list-style: none;
+}
+
+a, a:hover, a:focus, a:active, a:visited {
+  text-decoration: none;
+}
+
+body > div {
+  z-index: 1;
+  margin-bottom: 70px;
+  min-height: 100vh;
+  background: image-url('background.png') repeat;
+}
