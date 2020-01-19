@@ -9,9 +9,9 @@
                 - if post.cover
                   = image_tag(post.cover, alt: post.title)
                 - else
-                  .no-image
+                  .no-image data-id=post.rank
                     .loader
-                .ranking
+                .point
                   = post.point
             .title
               = link_to post.title, root_path
@@ -20,7 +20,8 @@
                 = "#{post.author} posted #{post.posted_at}"
               .line
                 .site
-                  | From 
                   = link_to post.site, post.site
+                .comment-count
+                  = post.comment_count
     - else
       p.no-post No post found

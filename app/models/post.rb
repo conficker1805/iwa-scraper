@@ -1,9 +1,19 @@
 class Post
   include ActiveModel::Model
 
-  attr_accessor :id, :url, :title, :content, :cover, :site, :point, :author, :comment_count, :posted_at
+  PER_PAGE = 12
+
+  attr_accessor :id, :url, :title, :content, :rank, :cover, :site, :point, :author, :comment_count, :posted_at, :cached_at
 
   def cached?
-    File.exist?(Rails.root.join('tmp', "#{id}.yml"))
+    File.exist? cache_path
+  end
+
+  def load_cache
+    YAML.load_file(cache_path)
+  end
+
+  def cache_path
+    Rails.root.join('tmp', 'posts' "#{rank}.yml")
   end
 end

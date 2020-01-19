@@ -1,23 +1,29 @@
 class Crawler
   class << self
-    ORIGIN_SITE = "https://news.ycombinator.com/"
+    ORIGIN_SITE = "https://news.ycombinator.com"
+    NEWS_POST_PER_PAGE = 30
 
-    def parse(html)
-      @data = Nokogiri::HTML.parse(html)
+    def fetch_post(page)
+      last_post  = page.to_i * Post::PER_PAGE
+      first_post = last_post - Post::PER_PAGE + 1
+      post_range = (first_post..last_post).to_a
+      pages = [first_post, last_post].map{ |n| (n.to_f / NEWS_POST_PER_PAGE).ceil }.uniq
 
-      result = posts.map do |post|
-        if post.cached?
-          path = Rails.root.join('tmp', "#{post.id}.yml")
-          YAML.load_file(path)
-        else
-          post
-        end
-
+      html = pages.map do |crawl_page|
+        uri = URI("#{ORIGIN_SITE}/best?p=#{crawl_page}")
+        Net::HTTP.get(uri)
       end
 
-      FetchPostJob.perform_later post_attrs.select { |p| p[:content].nil? }
+      @data = Nokogiri::HTML.parse(html.join)
 
-      result
+      result = posts.map do |post|
+        post.cached? ? post.load_cache : post
+      end
+
+
+      FetchPostJob.perform_later post_attrs.select { |p| post_range.include? p[:rank] }
+
+      result.select { |post| post_range.include? post.rank }
     rescue StandardError => e
       Rails.logger.info("DEBUG:------------------ #{ e.inspect } ------------------")
       # TODO: rescue parse error & send mail to admin
@@ -35,6 +41,7 @@ class Crawler
           id: Digest::MD5.hexdigest(url(post)),
           url: url(post),
           title: title(post),
+          rank: rank(post),
           site: site(post),
           point: point(post),
           author: author(post),
@@ -56,6 +63,10 @@ class Crawler
 
     def title(post)
       post.css('.title .storylink').text
+    end
+
+    def rank(post)
+      post.css('.rank').text.to_i
     end
 
     def site(post)

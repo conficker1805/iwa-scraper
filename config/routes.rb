@@ -3,5 +3,7 @@ Rails.application.routes.draw do
 
   root controller: :application, action: :index
 
+  get :images, controller: :posts, action: :images
+
   resources :posts, only: %i[index]
 end

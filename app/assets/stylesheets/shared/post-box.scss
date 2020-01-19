@@ -15,13 +15,13 @@
 
     .no-image {
       min-height: 232px;
-      background-color: #CCC;
+      background-color: #e4e2e2;
       @include -display-flex();
       @include -justify-content(center);
       @include -align-items(center);
     }
 
-    .ranking {
+    .point {
       color: #DCDCDC;
       position: absolute;
       top: 35px;
