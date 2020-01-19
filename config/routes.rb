@@ -5,5 +5,7 @@ Rails.application.routes.draw do
 
   get :images, controller: :posts, action: :images
 
-  resources :posts, only: %i[index]
+  resources :posts, only: %i[index show]
+
+  # match 'posts/:id', to: 'posts#show', via: :get
 end

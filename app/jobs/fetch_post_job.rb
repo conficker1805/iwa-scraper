@@ -15,7 +15,7 @@ class FetchPostJob < ApplicationJob
 
           next if File.exist?(cache_path)
 
-          html = Net::HTTP.get(URI(post.url)) # TODO: Handle if HTTP error
+          html = Net::HTTP.get(follow_redirection(post.url))
 
           images = Readability::Document.new(html, tags: %w[div p img a meta], attributes: %w[src href content]).images
           og_image =  Nokogiri::HTML(html).xpath('//meta[@property="og:image"]/@content')&.first&.value
@@ -33,6 +33,16 @@ class FetchPostJob < ApplicationJob
     end
 
     workers.map(&:join)
+  end
+
+  def follow_redirection(url)
+    r = Net::HTTP.get_response(URI(url))
+
+    until r['location'].nil?
+      r = Net::HTTP.get_response(URI(r['location']))
+    end
+
+    r.uri
   end
 
   def next_post

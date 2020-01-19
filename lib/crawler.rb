@@ -24,7 +24,7 @@ class Crawler
         post.cached? ? post.load_cache : post
       end
 
-      $redis.expire("page:#{page}", 5.minutes.to_i)
+      $redis.expire("page:#{page}", 15.minutes.to_i)
 
       FetchPostJob.perform_later hashes
 

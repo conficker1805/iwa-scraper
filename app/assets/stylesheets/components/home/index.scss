@@ -15,4 +15,11 @@
     margin: calc(50vh - 100px) auto;
     text-transform: uppercase;
   }
+
+  .control {
+    position: relative;
+    left: 50%;
+    margin-top: 30px;
+    @include -transform-translate(-50%, 0);
+  }
 }

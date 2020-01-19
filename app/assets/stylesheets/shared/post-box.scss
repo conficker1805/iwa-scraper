@@ -35,7 +35,14 @@
   }
 
   .title {
-    @include -text-elipsis(2)
+    text-align: justify;
+    margin-bottom: 10px;
+    line-height: 20px;
+    margin-top: 10px;
+
+    a {
+      font-weight: bold;
+    }
   }
 
   .info {

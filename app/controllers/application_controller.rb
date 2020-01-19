@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def id
+    params.require(:id)
+  end
+
   def page
     params.fetch(:page, 1)
   end

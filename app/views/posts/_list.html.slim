@@ -5,7 +5,7 @@
         .col-md-3
           .post-box
             .cover
-              = link_to root_path
+              = link_to post_path(post.id)
                 - if post.cover
                   = image_tag(post.cover, alt: post.title)
                 - else
@@ -14,14 +14,19 @@
                 .point
                   = post.point
             .title
-              = link_to post.title, root_path
+              = link_to post.title, post_path(post.id)
             .info
               .author
                 = "#{post.author} posted #{post.posted_at}"
               .line
                 .site
-                  = link_to post.site, post.site
+                  = post.site
                 .comment-count
                   = post.comment_count
+      .control
+        .btn-group
+          = link_to '<< Newer Posts', '#', class: 'prev btn btn-info'
+          = link_to 'Older Posts >>', '#', class: 'next btn btn-info'
     - else
       p.no-post No post found
+

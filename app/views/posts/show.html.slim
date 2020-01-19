@@ -1,0 +1,19 @@
+.wraper
+  .container
+    .row
+      .col-md-8.offset-md-2
+        - if @post
+          article
+            - if @post.cover.start_with?('http')
+              .cover
+                = image_tag(@post.cover)
+            h1.title.text-center
+              = @post.title
+
+            .content
+              == @post.content
+        - else
+          .no-content.text-center
+            | Sorry This Content Isn't Available Right Now
+          .back.text-center
+            = link_to 'Go back', root_path

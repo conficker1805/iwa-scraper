@@ -2,7 +2,8 @@ class PostsController < ApplicationController
   include ActionController::Live
 
   def index
-    # TODO: accept js only
+    return not_found if request.format != :js
+
     cache = $redis.lrange("page:#{page}", 0, -1)
 
     if cache.present?
@@ -17,11 +18,15 @@ class PostsController < ApplicationController
     end
   end
 
+  def show
+    @post = Post.new(id: id).load_cache
+  rescue Errno::ENOENT => e
+  end
+
   def images
     response.headers['Content-Type'] = 'text/event-stream'
     sse = SSE.new(response.stream)
 
-    # Handle if data wrong format
     pending  = params[:post_ids].split(',')
     finished = []
 
@@ -43,5 +48,11 @@ class PostsController < ApplicationController
     end
 
     sse.close
+  end
+
+  private
+
+  def not_found
+    raise ActionController::RoutingError.new('Not Found')
   end
 end
