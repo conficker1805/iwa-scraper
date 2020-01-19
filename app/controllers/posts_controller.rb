@@ -3,17 +3,17 @@ class PostsController < ApplicationController
 
   def index
     # TODO: accept js only
+    cache = $redis.lrange("page:#{page}", 0, -1)
 
-    # Cache list of post in page
-
-    no_cache = true
-
-    if no_cache
-      @posts = Crawler.fetch_post(page)
-
-      # $redis.setex("page:#{page}", 5.minutes.seconds.to_i, 1)
+    if cache.present?
+      @posts = cache.map{ |id| Post.new(id: id).load_cache }
     else
-
+      @posts = Crawler.fetch_post(page)
+    end
+  rescue Errno::ENOENT => e
+    if cache.present?
+      $redis.del("page:#{page}")
+      retry
     end
   end
 
@@ -39,7 +39,7 @@ class PostsController < ApplicationController
         end
       end
 
-      sleep(0.1)
+      sleep(0.5)
     end
 
     sse.close

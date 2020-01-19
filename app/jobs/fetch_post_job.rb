@@ -11,15 +11,16 @@ class FetchPostJob < ApplicationJob
     workers = (0...5).map do
       Thread.new do
         while post = next_post
-          cache_path = Rails.root.join('tmp', 'posts', "#{post.rank}.yml")
+          cache_path = Rails.root.join('tmp', 'posts', "#{post.id}.yml")
 
           next if File.exist?(cache_path)
 
           html = Net::HTTP.get(URI(post.url)) # TODO: Handle if HTTP error
 
-          images = Readability::Document.new(html, tags: %w[div p img a], attributes: %w[src href]).images
+          images = Readability::Document.new(html, tags: %w[div p img a meta], attributes: %w[src href content]).images
+          og_image =  Nokogiri::HTML(html).xpath('//meta[@property="og:image"]/@content')&.first&.value
 
-          post.cover = images.first || default_image
+          post.cover = images.first || og_image || default_image
           post.content = Readability::Document.new(html).content
           post.cached_at = Time.now
 

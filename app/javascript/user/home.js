@@ -12,17 +12,14 @@ window.IwaScraper.application = {
           let post = JSON.parse(event.data)
           let elm  = $(`[data-id=${post.id}]`)
 
-          if (post.cover) {
-            $('<img />', {src: post.cover}).insertBefore(elm);
-            elm.remove()
-          } else {
-            // #TODO
-          }
+          $('<img />', {src: post.cover}).insertBefore(elm);
+          elm.remove()
         })
 
         source.onerror = (event) => {
           if (event.eventPhase == EventSource.CLOSED) {
             source.close();
+            // TODO: Remove all loading
           }
         };
       }

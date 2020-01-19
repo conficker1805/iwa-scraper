@@ -9,7 +9,7 @@
                 - if post.cover
                   = image_tag(post.cover, alt: post.title)
                 - else
-                  .no-image data-id=post.rank
+                  .no-image data-id=post.id
                     .loader
                 .point
                   = post.point

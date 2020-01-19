@@ -16,24 +16,25 @@ class Crawler
 
       @data = Nokogiri::HTML.parse(html.join)
 
-      result = posts.map do |post|
+      hashes = post_attrs.select { |i| post_range.include? i[:rank] }
+      result = hashes.map do |hash|
+        $redis.rpush("page:#{page}", hash[:id])
+
+        post = Post.new(hash)
         post.cached? ? post.load_cache : post
       end
 
+      $redis.expire("page:#{page}", 5.minutes.to_i)
 
-      FetchPostJob.perform_later post_attrs.select { |p| post_range.include? p[:rank] }
+      FetchPostJob.perform_later hashes
 
-      result.select { |post| post_range.include? post.rank }
+      result
     rescue StandardError => e
       Rails.logger.info("DEBUG:------------------ #{ e.inspect } ------------------")
       # TODO: rescue parse error & send mail to admin
     end
 
     private
-
-    def posts
-      @_posts ||= post_attrs.map{ |p| Post.new(p) }
-    end
 
     def post_attrs
       @_post_attrs ||= posts_wrap.map do |post|

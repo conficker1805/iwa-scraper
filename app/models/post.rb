@@ -14,6 +14,6 @@ class Post
   end
 
   def cache_path
-    Rails.root.join('tmp', 'posts' "#{rank}.yml")
+    Rails.root.join('tmp', 'posts', "#{id}.yml")
   end
 end
