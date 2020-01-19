@@ -2,7 +2,7 @@
   .row
     - if @posts.present?
       - @posts.each do |post|
-        .col-md-3
+        .grid.col-xs-12.col-md-6.col-lg-4
           .post-box
             .cover
               = link_to post_path(post.id)
