@@ -5,7 +5,6 @@ class PostsController < ApplicationController
     return not_found if request.format != :js || page.to_i < 1
 
     cache = $redis.lrange("page:#{page}", 0, -1)
-    puts cache.present?
 
     @posts = cache.present? ? from_cache(cache) : Crawler.fetch_post(page)
   rescue Errno::ENOENT => e

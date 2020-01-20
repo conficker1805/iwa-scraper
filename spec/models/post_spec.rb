@@ -41,7 +41,7 @@ describe Post do
 
     context 'no cache file' do
       it 'should return false' do
-        expect(post.load_cache).to be_falsey
+        expect { post.load_cache }.to raise_error(Errno::ENOENT)
       end
     end
 

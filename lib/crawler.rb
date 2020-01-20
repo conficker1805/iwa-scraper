@@ -8,23 +8,16 @@ class Crawler
       first_post = last_post - Post::PER_PAGE + 1
       post_range = (first_post..last_post).to_a
       pages = [first_post, last_post].map{ |n| (n.to_f / NEWS_POST_PER_PAGE).ceil }.uniq
-
-      html = pages.map do |crawl_page|
-        uri = URI("#{ORIGIN_SITE}best?p=#{crawl_page}")
-        Net::HTTP.get(uri)
-      end
-
-      @data = Nokogiri::HTML.parse(html.join)
+      @data = Nokogiri::HTML.parse(html_for(pages))
 
       hashes = post_attrs.select { |i| post_range.include? i[:rank] }
       result = hashes.map do |hash|
         $redis.rpush("page:#{page}", hash[:id])
-
         post = Post.new(hash)
         post.cached? ? post.load_cache : post
       end
 
-      $redis.expire("page:#{page}", 15.minutes.to_i)
+      $redis.expire("page:#{page}", 5.minutes.to_i)
 
       FetchPostJob.perform_later hashes
 
@@ -34,6 +27,15 @@ class Crawler
     end
 
     private
+
+    def html_for(pages)
+      html = pages.map do |crawl_page|
+        uri = URI("#{ORIGIN_SITE}best?p=#{crawl_page}")
+        Net::HTTP.get(uri)
+      end
+
+      html.join
+    end
 
     def post_attrs
       posts_wrap.map do |post|

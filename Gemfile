@@ -61,6 +61,8 @@ group :development do
 end
 
 group :test do
+  gem 'vcr'
+  gem 'webmock'
   gem 'faker'
   gem 'factory_bot_rails'
   gem 'rspec-rails', '4.0.0.beta3'

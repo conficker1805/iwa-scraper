@@ -21,7 +21,6 @@ describe PostsController, type: :controller do
 
       context 'has cache' do
         before do
-
           5.times do
             post = Post.new(FactoryBot.attributes_for(:post))
             File.open(post.cache_path, "w+") do |file|
