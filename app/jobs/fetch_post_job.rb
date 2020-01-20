@@ -7,7 +7,7 @@ class FetchPostJob < ApplicationJob
 
     create_workspace
 
-    workers = (0...5).map do
+    workers = (0...2).map do
       Thread.new do
         while post = next_post
           cache_path = Rails.root.join('tmp', 'posts', "#{post.id}.yml")
@@ -40,6 +40,7 @@ class FetchPostJob < ApplicationJob
     post.content = Readability::Document.new(html).content
     post.cached_at = Time.now
     post
+  rescue StandardError
   end
 
   def follow_redirection(url)

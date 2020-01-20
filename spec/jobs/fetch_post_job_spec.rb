@@ -14,7 +14,7 @@ describe FetchPostJob, type: :job do
     it 'should return workers' do
       VCR.use_cassette("posts/details") do
         threads = FetchPostJob.new.perform(hashes)
-        expect(threads.count).to eq 5
+        expect(threads.count).to eq 2
       end
     end
   end

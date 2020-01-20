@@ -44,6 +44,14 @@ gem 'sidekiq'
 gem 'redis', '~> 4.0'
 gem 'redis-namespace'
 
+# Deploy
+gem 'capistrano', '~> 3.11.0'
+gem 'capistrano-rvm', group: :development
+gem 'capistrano-rails', '~> 1.4.0'
+gem 'capistrano-bundler', '~> 1.6'
+gem 'capistrano-passenger'
+gem 'capistrano-webpacker-precompile', require: false
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -53,17 +61,17 @@ group :production do
   gem 'rails_12factor'
 end
 
+gem 'listen', '>= 3.0.5', '< 3.2'
+
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
-  gem 'listen', '>= 3.0.5', '< 3.2'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'better_errors'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'binding_of_caller'
 end
-
 
 group :test do
   gem 'vcr'

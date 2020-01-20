@@ -4,6 +4,14 @@ window.IwaScraper.application = {
     let page   = parseInt(params.get('page')) || 1
 
     this.fetchPosts(page)
+
+    window.onpopstate = ((event) => {
+      console.log('YES')
+      Turbolinks.visit(document.URL, { action: "replace" })
+      // if (event.state && event.state.x){
+        // location.reload()
+      // }
+    });
   },
 
   refreshNavigators(){
@@ -20,30 +28,30 @@ window.IwaScraper.application = {
       $('.prev').addClass('disabled')
     } else {
       $('.prev').click((e) => {
-        this.refreshUrl(e, page - 1)
-        this.fetchPosts(page - 1)
+        this.refreshUrl(e, page, page - 1)
       })
     }
 
     $('.next').click((e) => {
-      this.refreshUrl(e, page + 1)
-      this.fetchPosts(page + 1)
+      this.refreshUrl(e, page, page + 1)
     })
   },
 
-  refreshUrl(e, request_page) {
+  refreshUrl(e, page, request_page) {
     e.preventDefault();
-    history.pushState({}, null, `?page=${request_page}`)
+    history.pushState({x: true}, null, `?page=${request_page}`)
+    this.fetchPosts(request_page)
   },
 
   fetchPosts(request_page) {
+    console.log('fetch post')
     $.get( '/posts.js', { page: request_page }, () => {
       this.refreshNavigators()
 
       let ids = $.map($('.no-image'), (i) => { return $(i).data('id') })
 
       if (ids.length > 0){
-        let source = new EventSource('/images?post_ids=' + ids.join(","))
+        window.source = new EventSource('/images?post_ids=' + ids.join(","))
         source.addEventListener("fetch_image", (event) => {
           let post = JSON.parse(event.data)
           let elm  = $(`[data-id=${post.id}]`)
