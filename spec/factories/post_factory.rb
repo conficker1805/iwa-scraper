@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :post do
-    id { Digest::MD5.hexdigest('https://google.com') }
-    url { 'https://google.com' }
+    sequence(:url) { |n| "https://google.com?test=#{n}" }
+    id { Digest::MD5.hexdigest(url) }
     title { 'Google' }
     content { "<div><p>Search</p></div>" }
     sequence(:rank) { |n| n }

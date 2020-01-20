@@ -5,6 +5,8 @@ class PostsController < ApplicationController
     return not_found if request.format != :js || page.to_i < 1
 
     cache = $redis.lrange("page:#{page}", 0, -1)
+    puts cache.present?
+
     @posts = cache.present? ? from_cache(cache) : Crawler.fetch_post(page)
   rescue Errno::ENOENT => e
     $redis.del("page:#{page}") && retry if cache.present?
@@ -22,9 +24,7 @@ class PostsController < ApplicationController
     pending  = params[:post_ids].split(',')
     finished = []
 
-    max = Time.now + 10.seconds
-
-    until max < Time.now
+    until timeout < Time.now
       (pending - finished).each do |id|
         path = Rails.root.join('tmp', 'posts', "#{id}.yml")
         next unless File.exist?(path)
@@ -43,6 +43,10 @@ class PostsController < ApplicationController
   end
 
   private
+
+  def timeout
+    Time.now + 10.seconds
+  end
 
   def from_cache(cache)
     cache.map{ |id| Post.new(id: id).load_cache }
