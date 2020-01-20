@@ -1,6 +1,6 @@
 .container
-  .row
-    - if @posts.present?
+  - if @posts.present?
+    .row
       - @posts.each do |post|
         .grid.col-xs-12.col-md-6.col-lg-4
           .post-box
@@ -18,15 +18,13 @@
             .info
               .author
                 = "#{post.author} posted #{post.posted_at}"
-              .line
-                .site
-                  = post.site
-                .comment-count
-                  = post.comment_count
+              .comment-count
+                = post.comment_count
+    .row
       .control
         .btn-group
-          = link_to '<< Newer Posts', '#', class: 'prev btn btn-info'
+          = link_to '<< Newer Posts', '#', class: "prev btn btn-info "
           = link_to 'Older Posts >>', '#', class: 'next btn btn-info'
-    - else
-      p.no-post No post found
+  - else
+    p.no-post No post found
 

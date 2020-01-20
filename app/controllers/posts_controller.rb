@@ -2,20 +2,12 @@ class PostsController < ApplicationController
   include ActionController::Live
 
   def index
-    return not_found if request.format != :js
+    return not_found if request.format != :js || page.to_i < 1
 
     cache = $redis.lrange("page:#{page}", 0, -1)
-
-    if cache.present?
-      @posts = cache.map{ |id| Post.new(id: id).load_cache }
-    else
-      @posts = Crawler.fetch_post(page)
-    end
+    @posts = cache.present? ? from_cache(cache) : Crawler.fetch_post(page)
   rescue Errno::ENOENT => e
-    if cache.present?
-      $redis.del("page:#{page}")
-      retry
-    end
+    $redis.del("page:#{page}") && retry if cache.present?
   end
 
   def show
@@ -51,6 +43,10 @@ class PostsController < ApplicationController
   end
 
   private
+
+  def from_cache(cache)
+    cache.map{ |id| Post.new(id: id).load_cache }
+  end
 
   def not_found
     raise ActionController::RoutingError.new('Not Found')

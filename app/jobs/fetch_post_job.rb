@@ -1,10 +1,9 @@
 class FetchPostJob < ApplicationJob
-  queue_as :default
+  sidekiq_options retry: false
 
   def perform(posts)
     @mutex = Mutex.new
     @posts = posts.map{ |hash| Post.new(hash) }
-    default_image = ActionController::Base.helpers.asset_url('default-post.png')
 
     create_workspace
 
@@ -15,14 +14,8 @@ class FetchPostJob < ApplicationJob
 
           next if File.exist?(cache_path)
 
-          html = Net::HTTP.get(follow_redirection(post.url))
-
-          images = Readability::Document.new(html, tags: %w[div p img a meta], attributes: %w[src href content]).images
-          og_image =  Nokogiri::HTML(html).xpath('//meta[@property="og:image"]/@content')&.first&.value
-
-          post.cover = images.first || og_image || default_image
-          post.content = Readability::Document.new(html).content
-          post.cached_at = Time.now
+          html = follow_redirection(post.url)
+          post = update_post(post, html)
 
           File.open(cache_path, "w+") do |file|
             file.write(post.to_yaml)
@@ -35,6 +28,20 @@ class FetchPostJob < ApplicationJob
     workers.map(&:join)
   end
 
+  def update_post(post, html)
+    default_image = ActionController::Base.helpers.asset_url('default-post.png')
+    images = Readability::Document.new(html, tags: %w[div p img a meta], attributes: %w[src href content]).images
+    og_image =  Nokogiri::HTML(html).xpath('//meta[@property="og:image"]/@content')&.first&.value
+
+    cover = images.first || og_image
+    cover = URI.join(post.url, cover).to_s if cover && !URI(cover).absolute
+
+    post.cover = cover || default_image
+    post.content = Readability::Document.new(html).content
+    post.cached_at = Time.now
+    post
+  end
+
   def follow_redirection(url)
     r = Net::HTTP.get_response(URI(url))
 
@@ -42,7 +49,7 @@ class FetchPostJob < ApplicationJob
       r = Net::HTTP.get_response(URI(r['location']))
     end
 
-    r.uri
+    r.body
   end
 
   def next_post

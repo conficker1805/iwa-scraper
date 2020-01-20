@@ -1,6 +1,6 @@
 class Crawler
   class << self
-    ORIGIN_SITE = "https://news.ycombinator.com"
+    ORIGIN_SITE = "https://news.ycombinator.com/"
     NEWS_POST_PER_PAGE = 30
 
     def fetch_post(page)
@@ -10,7 +10,7 @@ class Crawler
       pages = [first_post, last_post].map{ |n| (n.to_f / NEWS_POST_PER_PAGE).ceil }.uniq
 
       html = pages.map do |crawl_page|
-        uri = URI("#{ORIGIN_SITE}/best?p=#{crawl_page}")
+        uri = URI("#{ORIGIN_SITE}best?p=#{crawl_page}")
         Net::HTTP.get(uri)
       end
 
@@ -30,14 +30,13 @@ class Crawler
 
       result
     rescue StandardError => e
-      Rails.logger.info("DEBUG:------------------ #{ e.inspect } ------------------")
       # TODO: rescue parse error & send mail to admin
     end
 
     private
 
     def post_attrs
-      @_post_attrs ||= posts_wrap.map do |post|
+      posts_wrap.map do |post|
         {
           id: Digest::MD5.hexdigest(url(post)),
           url: url(post),
